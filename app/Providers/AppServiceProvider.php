@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        date_default_timezone_set('Asia/Jakarta'); // native PHP timezone
+        Carbon::setLocale('id'); // untuk locale bahasa (id-ID)
+        Carbon::now()->setTimezone('Asia/Jakarta'); // optional redundant
     }
 }
