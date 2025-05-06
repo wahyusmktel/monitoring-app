@@ -14376,3 +14376,21 @@ body {
   background: linear-gradient(-45deg, #E80A15, #F25961) !important; }
 
 /*# sourceMappingURL=atlantis.css.map */
+/* Bungkus container layout */
+/* div.dataTables_wrapper .dataTables_length,
+div.dataTables_wrapper .dt-buttons,
+div.dataTables_wrapper .dataTables_filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0 !important;
+}
+
+div.dataTables_wrapper .dt-buttons {
+    flex: 1;
+    justify-content: flex-start;
+}
+
+div.dataTables_wrapper .dataTables_filter {
+    flex: 1;
+    justify-content: flex-end;
+} */
