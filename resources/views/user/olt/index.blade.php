@@ -42,30 +42,44 @@
                         <div class="modal-body">
                             <form id="formAddOlt">
                                 @csrf
+
                                 <div class="form-group">
                                     <label>Nama OLT</label>
-                                    <input type="text" name="nama_olt" class="form-control" required>
+                                    <input type="text" name="nama_olt" class="form-control"
+                                        placeholder="Contoh: OLT ZTE PON-1/1" required>
                                 </div>
+
                                 <div class="form-group">
                                     <label>IP Address</label>
-                                    <input type="text" name="ip_address" class="form-control">
+                                    <input type="text" name="ip_address" class="form-control"
+                                        placeholder="Contoh: 192.168.1.1" inputmode="decimal"
+                                        pattern="(?:\d{1,3}\.){3}\d{1,3}">
                                 </div>
+
                                 <div class="form-group">
                                     <label>Lokasi</label>
-                                    <input type="text" name="lokasi" class="form-control">
+                                    <input type="text" name="lokasi" class="form-control"
+                                        placeholder="Contoh: Ruang Server Lt. 1">
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Losses</label>
-                                    <input type="number" name="losses" step="0.01" class="form-control">
+                                    <label>Losses (dB)</label>
+                                    <input type="number" name="losses" class="form-control" step="0.01" min="0"
+                                        max="99" placeholder="Contoh: 2.50">
                                 </div>
+
                                 <div class="form-group">
                                     <label>Latitude</label>
-                                    <input type="text" name="latitude" class="form-control">
+                                    <input type="number" name="latitude" class="form-control" step="0.000001"
+                                        placeholder="Contoh: -5.123456">
                                 </div>
+
                                 <div class="form-group">
                                     <label>Longitude</label>
-                                    <input type="text" name="longitude" class="form-control">
+                                    <input type="number" name="longitude" class="form-control" step="0.000001"
+                                        placeholder="Contoh: 105.123456">
                                 </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success btn-sm">Simpan</button>
