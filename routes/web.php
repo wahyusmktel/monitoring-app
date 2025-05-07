@@ -5,6 +5,11 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\UserServerController;
 use App\Http\Controllers\User\UserOltController;
+use App\Http\Controllers\User\UserOltPortController;
+use App\Http\Controllers\User\UserOtbController;
+use App\Http\Controllers\User\UserOdcController;
+use App\Http\Controllers\User\UserOdpController;
+use App\Http\Controllers\User\UserPelangganController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,9 +32,45 @@ Route::prefix('user')->middleware('auth')->group(function () {
     });
 
     Route::prefix('master_data')->group(function () {
-        Route::get('/olt', [UserOltController::class, 'index'])->name('user.olt.index');
-        Route::post('/olt/store', [UserOltController::class, 'store'])->name('user.olt.store');
-        Route::put('/olt/update/{id}', [UserOltController::class, 'update'])->name('user.olt.update');
-        Route::delete('/olt/delete/{id}', [UserOltController::class, 'destroy'])->name('user.olt.destroy');
+        Route::prefix('olt')->group(function () {
+            Route::get('/olt', [UserOltController::class, 'index'])->name('user.olt.index');
+            Route::post('/olt/store', [UserOltController::class, 'store'])->name('user.olt.store');
+            Route::put('/olt/update/{id}', [UserOltController::class, 'update'])->name('user.olt.update');
+            Route::delete('/olt/delete/{id}', [UserOltController::class, 'destroy'])->name('user.olt.destroy');
+        });
+        Route::prefix('olt_port')->group(function () {
+            Route::get('/', [UserOltPortController::class, 'index'])->name('user.olt_port.index');
+            Route::post('/store', [UserOltPortController::class, 'store'])->name('user.olt_port.store');
+            Route::put('/update/{id}', [UserOltPortController::class, 'update'])->name('user.olt_port.update');
+            Route::delete('/delete/{id}', [UserOltPortController::class, 'destroy'])->name('user.olt_port.destroy');
+        });
+        Route::prefix('otb')->group(function () {
+            Route::get('/', [UserOtbController::class, 'index'])->name('user.otb.index');
+            Route::post('/store', [UserOtbController::class, 'store'])->name('user.otb.store');
+            Route::put('/update/{id}', [UserOtbController::class, 'update'])->name('user.otb.update');
+            Route::delete('/delete/{id}', [UserOtbController::class, 'destroy'])->name('user.otb.destroy');
+        });
+        Route::prefix('odc')->group(function () {
+            Route::get('/', [UserOdcController::class, 'index'])->name('user.odc.index');
+            Route::post('/store', [UserOdcController::class, 'store'])->name('user.odc.store');
+            Route::put('/update/{id}', [UserOdcController::class, 'update'])->name('user.odc.update');
+            Route::delete('/delete/{id}', [UserOdcController::class, 'destroy'])->name('user.odc.destroy');
+        });
+        Route::prefix('odp')->name('user.odp.')->controller(UserOdpController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/store', 'store')->name('store');
+            Route::put('/update/{id}', 'update')->name('update');
+            Route::delete('/delete/{id}', 'destroy')->name('destroy');
+        });
+        Route::prefix('pelanggan')->name('user.pelanggan.')->controller(UserPelangganController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/store', 'store')->name('store');
+            Route::put('/update/{id}', 'update')->name('update');
+            Route::delete('/delete/{id}', 'destroy')->name('destroy');
+            Route::post('/mass-delete', 'massDelete')->name('massDelete');
+            Route::get('/{id}/show', 'show')->name('show');
+            Route::get('/sebaran-pelanggan', 'map')->name('map');
+            Route::get('/sebaran-odp', 'sebaran')->name('sebaran-odp');
+        });
     });
 });

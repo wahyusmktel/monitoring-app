@@ -20,11 +20,10 @@ class Pelanggan extends Model
         'nama_pelanggan',
         'odp_id',
         'alamat',
-        'no_hp',
+        'nomor_hp',
         'latitude',
         'longitude',
         'status',
-        'keterangan',
     ];
 
     /**

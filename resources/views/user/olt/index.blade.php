@@ -70,14 +70,14 @@
 
                                 <div class="form-group">
                                     <label>Latitude</label>
-                                    <input type="number" name="latitude" class="form-control" step="0.000001"
-                                        placeholder="Contoh: -5.123456">
+                                    <input type="number" name="latitude" class="form-control" step="0.0000000000000001"
+                                        placeholder="Contoh: -5.374870583955849">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Longitude</label>
-                                    <input type="number" name="longitude" class="form-control" step="0.000001"
-                                        placeholder="Contoh: 105.123456">
+                                    <input type="number" name="longitude" class="form-control" step="0.0000000000000001"
+                                        placeholder="Contoh: 105.08023089374917">
                                 </div>
 
                         </div>
