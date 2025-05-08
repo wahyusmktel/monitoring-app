@@ -10,6 +10,7 @@ use App\Http\Controllers\User\UserOtbController;
 use App\Http\Controllers\User\UserOdcController;
 use App\Http\Controllers\User\UserOdpController;
 use App\Http\Controllers\User\UserPelangganController;
+use App\Http\Controllers\User\UserOdpPortController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,6 +62,7 @@ Route::prefix('user')->middleware('auth')->group(function () {
             Route::post('/store', 'store')->name('store');
             Route::put('/update/{id}', 'update')->name('update');
             Route::delete('/delete/{id}', 'destroy')->name('destroy');
+            Route::get('/{id}', 'show')->name('show');
         });
         Route::prefix('pelanggan')->name('user.pelanggan.')->controller(UserPelangganController::class)->group(function () {
             Route::get('/', 'index')->name('index');
@@ -71,6 +73,11 @@ Route::prefix('user')->middleware('auth')->group(function () {
             Route::get('/{id}/show', 'show')->name('show');
             Route::get('/sebaran-pelanggan', 'map')->name('map');
             Route::get('/sebaran-odp', 'sebaran')->name('sebaran-odp');
+        });
+        Route::prefix('odp-port')->name('user.odp-port.')->controller(UserOdpPortController::class)->group(function () {
+            Route::get('/monitoring-port', 'monitoring')->name('monitoring');
+            Route::get('/assign', 'assignForm')->name('assign.form');
+            Route::post('/assign', 'assignPelanggan')->name('assign');
         });
     });
 });

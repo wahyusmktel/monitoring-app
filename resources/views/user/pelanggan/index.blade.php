@@ -59,7 +59,7 @@
                                 <label>Longitude</label>
                                 <input type="text" name="longitude" class="form-control" placeholder="105.123456">
                             </div>                            
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label>ODP</label>
                                 <select name="odp_id" class="form-control" required>
                                     <option value="">-- Pilih ODP --</option>
@@ -67,7 +67,7 @@
                                         <option value="{{ $odp->id }}">{{ $odp->nama_odp }}</option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success btn-sm">Simpan</button>

@@ -47,4 +47,9 @@ class Pelanggan extends Model
     {
         return $this->belongsTo(Odp::class, 'odp_id');
     }
+
+    public function odpPort()
+    {
+        return $this->hasOne(OdpPort::class);
+    }
 }

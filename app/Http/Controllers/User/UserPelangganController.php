@@ -29,7 +29,7 @@ class UserPelangganController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_pelanggan' => 'required|string|max:255',
-            'odp_id' => 'nullable|exists:odps,id',
+            // 'odp_id' => 'nullable|exists:odps,id',
             'alamat' => 'nullable|string|max:500',
             'nomor_hp' => 'nullable|string|max:20',
             'latitude' => 'nullable|numeric',
@@ -60,7 +60,7 @@ class UserPelangganController extends Controller
             'nomor_hp' => 'nullable|string|max:20',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'odp_id' => 'nullable|exists:odps,id',
+            // 'odp_id' => 'nullable|exists:odps,id',
         ]);
 
         if ($validator->fails()) {

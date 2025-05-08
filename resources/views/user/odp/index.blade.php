@@ -68,9 +68,68 @@
                                 <label>Longitude</label>
                                 <input type="number" name="longitude" step="0.00000000000000001" class="form-control" placeholder="Contoh: 105.123456">
                             </div>
+                            <div class="form-group">
+                                <label>Jumlah Port</label>
+                                <input type="number" name="jumlah_port" class="form-control" min="1" max="100" required placeholder="Contoh: 8">
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success btn-sm">Simpan</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Edit -->
+        <div class="modal fade" id="modalEditOdp" tabindex="-1" role="dialog" aria-labelledby="modalEditOdp" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formEditOdp">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="edit_id">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit ODP</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Nama ODP</label>
+                                <input type="text" name="nama_odp" id="edit_nama_odp" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>ODC</label>
+                                <select name="odc_id" id="edit_odc_id" class="form-control" required>
+                                    <option value="">-- Pilih ODC --</option>
+                                    @foreach ($odcs as $odc)
+                                        <option value="{{ $odc->id }}">{{ $odc->nama_odc }} - {{ $odc->lokasi }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Losses (dB)</label>
+                                <input type="number" name="losses" id="edit_losses" step="0.01" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Lokasi</label>
+                                <input type="text" name="lokasi" id="edit_lokasi" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Latitude</label>
+                                <input type="number" name="latitude" id="edit_latitude" step="0.00000000000000001" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Longitude</label>
+                                <input type="number" name="longitude" id="edit_longitude" step="0.00000000000000001" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Jumlah Port</label>
+                                <input type="number" name="jumlah_port" id="edit_jumlah_port" class="form-control" min="1" max="100" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
                             <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
                         </div>
                     </form>
@@ -138,7 +197,41 @@
                 alert('Pilih satu baris untuk edit.');
                 return;
             }
-            console.log('Edit ID:', ids[0]);
+
+            let id = ids[0];
+            $.get(`/user/master_data/odp/${id}`, function (data) {
+                $('#edit_id').val(data.id);
+                $('#edit_nama_odp').val(data.nama_odp);
+                $('#edit_odc_id').val(data.odc_id);
+                $('#edit_losses').val(data.losses);
+                $('#edit_lokasi').val(data.lokasi);
+                $('#edit_latitude').val(data.latitude);
+                $('#edit_longitude').val(data.longitude);
+                $('#edit_jumlah_port').val(data.jumlah_port);
+                $('#modalEditOdp').modal('show');
+            }).fail(function () {
+                toastr.error('Gagal mengambil data untuk diedit.');
+            });
+        });
+
+        // Simpan Perubahan
+        $('#formEditOdp').submit(function (e) {
+            e.preventDefault();
+            let id = $('#edit_id').val();
+            $.ajax({
+                url: `/user/master_data/odp/update/${id}`,
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function (res) {
+                    $('#modalEditOdp').modal('hide');
+                    $('#odp-table').DataTable().ajax.reload(null, false);
+                    toastr.success(res.message);
+                },
+                error: function (xhr) {
+                    let msg = xhr.responseJSON?.message || 'Gagal menyimpan perubahan';
+                    toastr.error(msg);
+                }
+            });
         });
 
         $('#btnDeleteSelected').on('click', function () {

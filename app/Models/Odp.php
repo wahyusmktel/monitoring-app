@@ -24,6 +24,7 @@ class Odp extends Model
         'lokasi',
         'latitude',
         'longitude',
+        'jumlah_port',
     ];
 
     /**
@@ -54,5 +55,10 @@ class Odp extends Model
     public function pelanggans()
     {
         return $this->hasMany(Pelanggan::class, 'odp_id');
+    }
+
+    public function ports()
+    {
+        return $this->hasMany(OdpPort::class);
     }
 }
