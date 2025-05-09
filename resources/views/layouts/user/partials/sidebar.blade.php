@@ -5,14 +5,24 @@
         'user.otb.index',
         'user.odc.index',
         'user.odp.index',
-        'user.pelanggan.index'
+        'user.pelanggan.index',
     );
 
     $odpPortActive = request()->routeIs('user.odp-port.*');
+
+    $paketActive = request()->routeIs('user.paket.index');
+
+    $billingActive = request()->routeIs(
+        'user.subscription.index',
+        'user.subscription.store',
+        'user.subscription.update',
+        'user.subscription.destroy',
+        'user.bill.index',
+    );
 @endphp
 
 <!-- Sidebar -->
-<div class="sidebar sidebar-style-2">			
+<div class="sidebar sidebar-style-2">
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-primary">
@@ -98,6 +108,36 @@
                                     <span class="sub-item">Monitoring Port</span>
                                 </a>
                             </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item {{ $paketActive ? 'active' : '' }}">
+                    <a href="{{ route('user.paket.index') }}">
+                        <i class="fas fa-box-open"></i>
+                        <p>Manajemen Paket</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {{ $billingActive ? 'active' : '' }}">
+                    <a data-toggle="collapse" href="#billingMenu" {{ $billingActive ? 'aria-expanded=true' : '' }}>
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <p>Billing</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ $billingActive ? 'show' : '' }}" id="billingMenu">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ request()->routeIs('user.subscription.index') ? 'active' : '' }}">
+                                <a href="{{ route('user.subscription.index') }}">
+                                    <span class="sub-item">Subscription</span>
+                                </a>
+                            </li>
+                            <li class="{{ request()->routeIs('user.bill.index') ? 'active' : '' }}">
+                                <a href="{{ route('user.bill.index') }}">
+                                    <span class="sub-item">Tagihan</span>
+                                </a>
+                            </li>
+                            {{-- Tambahan nanti bisa: Tagihan & Pembayaran --}}
                         </ul>
                     </div>
                 </li>

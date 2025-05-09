@@ -11,6 +11,9 @@ use App\Http\Controllers\User\UserOdcController;
 use App\Http\Controllers\User\UserOdpController;
 use App\Http\Controllers\User\UserPelangganController;
 use App\Http\Controllers\User\UserOdpPortController;
+use App\Http\Controllers\User\PaketController;
+use App\Http\Controllers\User\UserSubscriptionController;
+use App\Http\Controllers\User\UserBillController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -78,6 +81,26 @@ Route::prefix('user')->middleware('auth')->group(function () {
             Route::get('/monitoring-port', 'monitoring')->name('monitoring');
             Route::get('/assign', 'assignForm')->name('assign.form');
             Route::post('/assign', 'assignPelanggan')->name('assign');
+        });
+        Route::prefix('paket')->name('user.paket.')->controller(PaketController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/store', 'store')->name('store');
+            Route::put('/update/{id}', 'update')->name('update');
+            Route::delete('/destroy/{id}', 'destroy')->name('destroy');
+        });
+
+        Route::prefix('billing')->name('user.subscription.')->controller(UserSubscriptionController::class)->group(function () {
+            Route::get('/subscription', 'index')->name('index');
+            Route::post('/subscription/store', 'store')->name('store');
+            Route::put('/subscription/update/{id}', 'update')->name('update');
+            Route::delete('/subscription/delete/{id}', 'destroy')->name('destroy');
+        });
+
+        Route::prefix('billing')->name('user.bill.')->controller(UserBillController::class)->group(function () {
+            Route::get('/bill', 'index')->name('index');
+            Route::post('/bill/store', 'store')->name('store');
+            Route::put('/bill/update/{id}', 'update')->name('update');
+            Route::delete('/bill/delete/{id}', 'destroy')->name('destroy');
         });
     });
 });
