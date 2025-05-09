@@ -18,7 +18,10 @@
             <tr><th>Nama</th><td>{{ $pelanggan->nama_pelanggan }}</td></tr>
             <tr><th>Alamat</th><td>{{ $pelanggan->alamat }}</td></tr>
             <tr><th>No HP</th><td>{{ $pelanggan->nomor_hp }}</td></tr>
-            <tr><th>ODP</th><td>{{ optional($pelanggan->odp)->nama_odp ?? '-' }}</td></tr>
+            <tr>
+                <th>ODP</th>
+                <td>{{ optional(optional($pelanggan->odpPort)->odp)->nama_odp ?? '-' }}</td>
+            </tr>
             <tr><th>Koordinat</th><td>{{ $pelanggan->latitude }}, {{ $pelanggan->longitude }}</td></tr>
         </table>
 

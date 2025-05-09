@@ -18,6 +18,7 @@
         'user.subscription.update',
         'user.subscription.destroy',
         'user.bill.index',
+        'user.payment.index',
     );
 @endphp
 
@@ -135,6 +136,11 @@
                             <li class="{{ request()->routeIs('user.bill.index') ? 'active' : '' }}">
                                 <a href="{{ route('user.bill.index') }}">
                                     <span class="sub-item">Tagihan</span>
+                                </a>
+                            </li>
+                            <li class="{{ request()->routeIs('user.payment.index') ? 'active' : '' }}">
+                                <a href="{{ route('user.payment.index') }}">
+                                    <span class="sub-item">Pembayaran</span>
                                 </a>
                             </li>
                             {{-- Tambahan nanti bisa: Tagihan & Pembayaran --}}

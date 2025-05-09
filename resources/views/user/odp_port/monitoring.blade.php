@@ -33,11 +33,23 @@
                                     @else
                                         <em>Belum terhubung</em>
                                     @endif
-                                </small>
+                                </small>                                
                             </div>
                         </div>
+                        <div class="card-footer">
+                            @if($port->status === 'terpakai')
+                                <form action="{{ route('user.odp-port.unassign', $port->id) }}" method="POST"
+                                    onsubmit="return confirm('Yakin unassign pelanggan dari port ini?')" class="mt-2">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger btn-block">
+                                        Unassign
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
-                </div>                
+                </div>               
                 @endforeach
             </div>
         </div>

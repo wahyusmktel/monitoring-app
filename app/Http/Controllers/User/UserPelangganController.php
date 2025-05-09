@@ -9,6 +9,9 @@ use App\Models\Odp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Models\OdpPort;
+use App\Models\Paket;
+use App\Models\Subscription;
 
 class UserPelangganController extends Controller
 {
@@ -28,12 +31,14 @@ class UserPelangganController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_pelanggan' => 'required|string|max:255',
-            // 'odp_id' => 'nullable|exists:odps,id',
-            'alamat' => 'nullable|string|max:500',
-            'nomor_hp' => 'nullable|string|max:20',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
+            'nama_pelanggan'   => 'required|string|max:255',
+            'alamat'           => 'nullable|string|max:500',
+            'nomor_hp'         => 'nullable|string|max:20',
+            'latitude'         => 'nullable|numeric',
+            'longitude'        => 'nullable|numeric',
+            'odp_port_id'      => 'nullable|exists:odp_ports,id',
+            'paket_id'         => 'nullable|exists:pakets,id',
+            'tanggal_mulai'    => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -41,8 +46,32 @@ class UserPelangganController extends Controller
         }
 
         try {
-            Pelanggan::create($validator->validated());
-            return back()->with('success', 'Pelanggan berhasil ditambahkan.');
+            // Simpan pelanggan
+            $pelanggan = Pelanggan::create($validator->safe()->only([
+                'nama_pelanggan', 'alamat', 'nomor_hp', 'latitude', 'longitude'
+            ]));
+
+            // Assign ke port ODP
+            if ($request->filled('odp_port_id')) {
+                $port = OdpPort::where('id', $request->odp_port_id)->where('status', 'kosong')->first();
+                if ($port) {
+                    $port->update([
+                        'pelanggan_id' => $pelanggan->id,
+                        'status'       => 'terpakai',
+                    ]);
+                }
+            }
+
+            // Langsung buat subscription
+            if ($request->filled('paket_id') && $request->filled('tanggal_mulai')) {
+                Subscription::create([
+                    'pelanggan_id'   => $pelanggan->id,
+                    'paket_id'       => $request->paket_id,
+                    'tanggal_mulai'  => $request->tanggal_mulai,
+                ]);
+            }
+
+            return back()->with('success', 'Pelanggan berhasil ditambahkan dan dipetakan.');
         } catch (\Exception $e) {
             Log::error('Gagal menyimpan data pelanggan: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
@@ -56,11 +85,11 @@ class UserPelangganController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nama_pelanggan' => 'required|string|max:255',
-            'alamat' => 'nullable|string',
-            'nomor_hp' => 'nullable|string|max:20',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            // 'odp_id' => 'nullable|exists:odps,id',
+            'alamat'         => 'nullable|string',
+            'nomor_hp'       => 'nullable|string|max:20',
+            'latitude'       => 'nullable|numeric',
+            'longitude'      => 'nullable|numeric',
+            'odp_port_id'    => 'nullable|exists:odp_ports,id',
         ]);
 
         if ($validator->fails()) {
@@ -69,9 +98,30 @@ class UserPelangganController extends Controller
 
         try {
             $pelanggan->update($validator->validated());
+
+            // Update port jika diubah
+            if ($request->filled('odp_port_id')) {
+                $port = OdpPort::where('id', $request->odp_port_id)->where(function ($q) use ($pelanggan) {
+                    $q->where('status', 'kosong')->orWhere('pelanggan_id', $pelanggan->id);
+                })->first();
+
+                if ($port) {
+                    // Kosongkan port sebelumnya
+                    OdpPort::where('pelanggan_id', $pelanggan->id)->update([
+                        'pelanggan_id' => null,
+                        'status' => 'kosong'
+                    ]);
+
+                    $port->update([
+                        'pelanggan_id' => $pelanggan->id,
+                        'status'       => 'terpakai',
+                    ]);
+                }
+            }
+
             return back()->with('success', 'Data pelanggan berhasil diperbarui.');
         } catch (\Exception $e) {
-            Log::error('Gagal mengupdate pelanggan: ' . $e->getMessage());
+            Log::error('Gagal memperbarui pelanggan: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat memperbarui data.');
         }
     }
@@ -93,7 +143,7 @@ class UserPelangganController extends Controller
     {
         try {
             $odps = Odp::all();
-            $pelanggan = Pelanggan::with('odp')->findOrFail($id);
+            $pelanggan = Pelanggan::with(['odpPort.odp'])->findOrFail($id);
             return view('user.pelanggan.show', compact('pelanggan', 'odps'));
         } catch (\Exception $e) {
             Log::error('Gagal menampilkan detail pelanggan: ' . $e->getMessage());

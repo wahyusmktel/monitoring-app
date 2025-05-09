@@ -39,35 +39,56 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label>Nama</label>
-                                <input type="text" name="nama_pelanggan" class="form-control" required>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Nama</label>
+                                        <input type="text" name="nama_pelanggan" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Alamat</label>
+                                        <textarea name="alamat" class="form-control" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>No HP</label>
+                                        <input type="text" name="nomor_hp" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Latitude</label>
+                                        <input type="text" name="latitude" class="form-control" placeholder="-5.123456">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Longitude</label>
+                                        <input type="text" name="longitude" class="form-control" placeholder="105.123456">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Pilih Port ODP Kosong</label>
+                                        <select name="odp_port_id" class="form-control">
+                                            <option value="">-- Pilih Port --</option>
+                                            @foreach (\App\Models\OdpPort::with('odp')->where('status', 'kosong')->get() as $port)
+                                                <option value="{{ $port->id }}">
+                                                    {{ $port->odp->nama_odp ?? 'ODP' }} - Port {{ $port->port_number }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Pilih Paket</label>
+                                        <select name="paket_id" class="form-control">
+                                            <option value="">-- Pilih Paket --</option>
+                                            @foreach (\App\Models\Paket::orderBy('nama_paket')->get() as $paket)
+                                                <option value="{{ $paket->id }}">{{ $paket->nama_paket }} - Rp {{ number_format($paket->harga, 0, ',', '.') }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tanggal Mulai Berlangganan</label>
+                                        <input type="date" name="tanggal_mulai" class="form-control">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Alamat</label>
-                                <textarea name="alamat" class="form-control" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>No HP</label>
-                                <input type="text" name="nomor_hp" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Latitude</label>
-                                <input type="text" name="latitude" class="form-control" placeholder="-5.123456">
-                            </div>
-                            <div class="form-group">
-                                <label>Longitude</label>
-                                <input type="text" name="longitude" class="form-control" placeholder="105.123456">
-                            </div>                            
-                            {{-- <div class="form-group">
-                                <label>ODP</label>
-                                <select name="odp_id" class="form-control" required>
-                                    <option value="">-- Pilih ODP --</option>
-                                    @foreach ($odps as $odp)
-                                        <option value="{{ $odp->id }}">{{ $odp->nama_odp }}</option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success btn-sm">Simpan</button>

@@ -33,6 +33,7 @@ class UserBillController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'subscription_id'     => 'required|exists:subscriptions,id',
+            'jenis_pembayaran'    => 'required|in:bulanan,psb',
             'periode'             => 'required|date_format:Y-m',
             'jumlah_tagihan'      => 'required|numeric|min:0',
             'status_pembayaran'   => 'required|in:belum,lunas,jatuh_tempo',
@@ -72,6 +73,7 @@ class UserBillController extends Controller
         $bill = Bill::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
+            'jenis_pembayaran'    => 'required|in:bulanan,psb',
             'periode'             => 'required|date_format:Y-m',
             'jumlah_tagihan'      => 'required|numeric|min:0',
             'status_pembayaran'   => 'required|in:belum_dibayar,dibayar',
@@ -104,5 +106,42 @@ class UserBillController extends Controller
             Log::error('Gagal menghapus tagihan: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat menghapus data.');
         }
+    }
+
+    public function generateTagihan(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'periode' => 'required|date_format:Y-m',
+            'tanggal_jatuh_tempo' => 'required|date',
+            'jenis_pembayaran' => 'required|in:bulanan,psb',
+            'subscription_ids' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $periode = $request->periode;
+        $tanggalJatuhTempo = $request->tanggal_jatuh_tempo;
+        $jenis = $request->jenis_pembayaran;
+
+        $created = 0;
+        foreach ($request->subscription_ids as $subId) {
+            $exists = Bill::where('subscription_id', $subId)->where('periode', $periode)->exists();
+            if (!$exists) {
+                $subscription = Subscription::with('paket')->find($subId);
+                Bill::create([
+                    'subscription_id' => $subId,
+                    'periode' => $periode,
+                    'jumlah_tagihan' => $subscription->paket->harga ?? 0,
+                    'status_pembayaran' => 'belum',
+                    'tanggal_jatuh_tempo' => $tanggalJatuhTempo,
+                    'jenis_pembayaran' => $jenis,
+                ]);
+                $created++;
+            }
+        }
+
+        return back()->with('success', "$created tagihan berhasil digenerate.");
     }
 }

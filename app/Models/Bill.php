@@ -14,6 +14,7 @@ class Bill extends Model
 
     protected $fillable = [
         'subscription_id',
+        'jenis_pembayaran',
         'periode',
         'jumlah_tagihan',
         'status_pembayaran',

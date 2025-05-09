@@ -14,6 +14,7 @@ use App\Http\Controllers\User\UserOdpPortController;
 use App\Http\Controllers\User\PaketController;
 use App\Http\Controllers\User\UserSubscriptionController;
 use App\Http\Controllers\User\UserBillController;
+use App\Http\Controllers\User\UserPaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,6 +82,7 @@ Route::prefix('user')->middleware('auth')->group(function () {
             Route::get('/monitoring-port', 'monitoring')->name('monitoring');
             Route::get('/assign', 'assignForm')->name('assign.form');
             Route::post('/assign', 'assignPelanggan')->name('assign');
+            Route::delete('/unassign/{id}', 'unassign')->name('unassign');
         });
         Route::prefix('paket')->name('user.paket.')->controller(PaketController::class)->group(function () {
             Route::get('/', 'index')->name('index');
@@ -101,6 +103,14 @@ Route::prefix('user')->middleware('auth')->group(function () {
             Route::post('/bill/store', 'store')->name('store');
             Route::put('/bill/update/{id}', 'update')->name('update');
             Route::delete('/bill/delete/{id}', 'destroy')->name('destroy');
+            Route::post('/bill/generate', 'generateTagihan')->name('generate');
+        });
+
+        Route::prefix('billing')->name('user.payment.')->controller(UserPaymentController::class)->group(function () {
+            Route::get('/payment', 'index')->name('index');
+            Route::post('/payment/store', 'store')->name('store');
+            Route::put('/payment/update/{id}', 'update')->name('update');
+            Route::delete('/payment/delete/{id}', 'destroy')->name('destroy');
         });
     });
 });

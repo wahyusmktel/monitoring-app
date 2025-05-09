@@ -14,6 +14,9 @@
                 <button class="btn btn-success btn-sm mb-3" data-toggle="modal" data-target="#modalAddBill">
                     <i class="fas fa-plus"></i> Tambah Tagihan
                 </button>
+                <button class="btn btn-primary btn-sm mb-3" data-toggle="modal" data-target="#modalGenerateTagihan">
+                    <i class="fas fa-cogs"></i> Generate Tagihan
+                </button>
 
                 <table class="table table-bordered">
                     <thead>
@@ -21,6 +24,7 @@
                             <th>Pelanggan</th>
                             <th>Paket</th>
                             <th>Periode</th>
+                            <th>Jenis</th>
                             <th>Jumlah Tagihan</th>
                             <th>Status</th>
                             <th>Jatuh Tempo</th>
@@ -33,6 +37,11 @@
                                 <td>{{ $bill->subscription->pelanggan->nama_pelanggan }}</td>
                                 <td>{{ $bill->subscription->paket->nama_paket }}</td>
                                 <td>{{ \Carbon\Carbon::parse($bill->periode)->translatedFormat('F Y') }}</td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        {{ strtoupper($bill->jenis_pembayaran) }}
+                                    </span>
+                                </td>
                                 <td>Rp {{ number_format($bill->jumlah_tagihan, 0, ',', '.') }}</td>
                                 <td>
                                     <span
@@ -75,6 +84,13 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Jenis Pembayaran</label>
+                            <select name="jenis_pembayaran" class="form-control" required>
+                                <option value="bulanan">Bulanan</option>
+                                <option value="psb">Pasang Baru</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Periode</label>
                             <input type="month" name="periode" class="form-control" required>
                         </div>
@@ -103,4 +119,70 @@
             </form>
         </div>
     </div>
+    <!-- Modal Generate Tagihan -->
+    <div class="modal fade" id="modalGenerateTagihan" tabindex="-1" role="dialog" aria-labelledby="modalGenerateTagihan" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form method="POST" action="{{ route('user.bill.generate') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Generate Tagihan Bulanan</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Periode Tagihan (YYYY-MM)</label>
+                                <input type="month" name="periode" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Jatuh Tempo</label>
+                                <input type="date" name="tanggal_jatuh_tempo" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Jenis Pembayaran</label>
+                                <select name="jenis_pembayaran" class="form-control" required>
+                                    <option value="bulanan">Bulanan</option>
+                                    <option value="psb">PSB (Pasang Baru)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Pilih Pelanggan</label>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" id="checkAllPelanggan" class="form-check-input">
+                                <label class="form-check-label" for="checkAllPelanggan">Pilih Semua</label>
+                            </div>
+                            <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+                                @foreach ($subscriptions as $sub)
+                                    <div class="form-check">
+                                        <input type="checkbox" name="subscription_ids[]" value="{{ $sub->id }}" class="form-check-input pelanggan-checkbox" id="sub{{ $sub->id }}">
+                                        <label class="form-check-label" for="sub{{ $sub->id }}">
+                                            {{ $sub->pelanggan->nama_pelanggan }} - {{ $sub->paket->nama_paket }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">Generate</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
+
+@push('script')
+    <!-- Script lainnya jika ada -->
+
+    <script>
+        $('#checkAllPelanggan').on('change', function () {
+            $('.pelanggan-checkbox').prop('checked', this.checked);
+        });
+    </script>
+@endpush

@@ -17,14 +17,14 @@ class UserOdpPortController extends Controller
         $odps = Odp::with(['ports.pelanggan'])->get();
         return view('user.odp_port.monitoring', compact('odps'));
     }
-    /**
-     * Tampilkan form assign pelanggan ke port ODP.
-     */
+
     public function assignForm()
     {
         try {
             $odps = Odp::with('ports')->get();
-            $pelanggans = Pelanggan::whereNull('odp_id')->get(); // hanya pelanggan belum dipetakan
+
+            // Ambil pelanggan yang belum dipetakan ke port mana pun
+            $pelanggans = Pelanggan::whereDoesntHave('odpPort')->get();
 
             return view('user.odp_port.assign', compact('odps', 'pelanggans'));
         } catch (\Exception $e) {
@@ -39,8 +39,8 @@ class UserOdpPortController extends Controller
     public function assignPelanggan(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'odp_port_id' => 'required|exists:odp_ports,id',
-            'pelanggan_id' => 'required|exists:pelanggans,id',
+            'odp_port_id'   => 'required|exists:odp_ports,id',
+            'pelanggan_id'  => 'required|exists:pelanggans,id',
         ]);
 
         if ($validator->fails()) {
@@ -51,14 +51,18 @@ class UserOdpPortController extends Controller
             $port = OdpPort::findOrFail($request->odp_port_id);
             $pelanggan = Pelanggan::findOrFail($request->pelanggan_id);
 
+            // Update port: tandai sebagai terpakai dan isi pelanggan_id
             $port->update([
                 'pelanggan_id' => $pelanggan->id,
                 'status' => 'terpakai',
             ]);
 
-            $pelanggan->update([
-                'odp_id' => $port->odp_id,
-            ]);
+            // Update pelanggan: isi kolom relasi ke port
+            // $pelanggan->update([
+            //     'odp_port_id' => $port->id,
+            // ]);
+
+            // Log::info("Pelanggan {$pelanggan->nama_pelanggan} berhasil diassign ke ODP Port ID: {$port->id}");
 
             return back()->with('success', 'Pelanggan berhasil di-assign ke port.');
         } catch (\Exception $e) {
@@ -66,4 +70,33 @@ class UserOdpPortController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
         }
     }
+
+    /**
+     * Batalkan pemetaan pelanggan dari port (unassign).
+     */
+    public function unassign($id)
+    {
+        try {
+            $port = OdpPort::with('pelanggan')->findOrFail($id);
+
+            // Pastikan port memang sedang terpakai
+            if ($port->status !== 'terpakai' || !$port->pelanggan_id) {
+                return back()->with('warning', 'Port ini tidak sedang dipakai.');
+            }
+
+            // Update port: kosongkan pelanggan dan status
+            $port->update([
+                'pelanggan_id' => null,
+                'status' => 'kosong',
+            ]);
+
+            Log::info('Berhasil unassign pelanggan dari port', ['port_id' => $id]);
+
+            return back()->with('success', 'Pelanggan berhasil di-unassign dari port.');
+        } catch (\Exception $e) {
+            Log::error('Gagal unassign pelanggan dari port: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat melakukan unassign.');
+        }
+    }
+
 }
