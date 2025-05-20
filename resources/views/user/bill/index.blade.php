@@ -148,22 +148,18 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="form-group col-md-6">
                             <label>Pilih Pelanggan</label>
-                            <div class="form-check mb-2">
-                                <input type="checkbox" id="checkAllPelanggan" class="form-check-input">
-                                <label class="form-check-label" for="checkAllPelanggan">Pilih Semua</label>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small><input type="checkbox" id="checkAllSelect"> <label for="checkAllSelect">Pilih Semua</label></small>
                             </div>
-                            <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+                            <select name="subscription_ids[]" id="subscription-select" class="form-control select2" multiple required>
                                 @foreach ($subscriptions as $sub)
-                                    <div class="form-check">
-                                        <input type="checkbox" name="subscription_ids[]" value="{{ $sub->id }}" class="form-check-input pelanggan-checkbox" id="sub{{ $sub->id }}">
-                                        <label class="form-check-label" for="sub{{ $sub->id }}">
-                                            {{ $sub->pelanggan->nama_pelanggan }} - {{ $sub->paket->nama_paket }}
-                                        </label>
-                                    </div>
+                                    <option value="{{ $sub->id }}">
+                                        {{ $sub->pelanggan->nama_pelanggan }} - {{ $sub->paket->nama_paket }}
+                                    </option>
                                 @endforeach
-                            </div>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -177,12 +173,34 @@
 
 @endsection
 
-@push('script')
+{{-- @push('script')
     <!-- Script lainnya jika ada -->
 
     <script>
         $('#checkAllPelanggan').on('change', function () {
             $('.pelanggan-checkbox').prop('checked', this.checked);
+        });
+    </script>
+@endpush --}}
+
+@push('script')
+    <script>
+        $(document).ready(function() {
+            $('#subscription-select').select2({
+                placeholder: "Pilih pelanggan...",
+                width: '100%'
+            });
+
+            $('#checkAllSelect').on('change', function () {
+                if ($(this).is(':checked')) {
+                    let allValues = $('#subscription-select option').map(function() {
+                        return $(this).val();
+                    }).get();
+                    $('#subscription-select').val(allValues).trigger('change');
+                } else {
+                    $('#subscription-select').val(null).trigger('change');
+                }
+            });
         });
     </script>
 @endpush

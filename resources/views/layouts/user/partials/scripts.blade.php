@@ -40,6 +40,9 @@
 <script src="{{ asset('assets/js/plugin/jqvmap/jquery.vmap.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugin/jqvmap/maps/jquery.vmap.world.js') }}"></script>
 
+<!-- Select2 -->
+<script src="{{ asset('assets/js/plugin/select2/select2.full.min.js') }}"></script>
+
 <!-- Sweet Alert -->
 <script src="{{ asset('assets/js/plugin/sweetalert/sweetalert.min.js') }}"></script>
 
