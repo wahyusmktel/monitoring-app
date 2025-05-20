@@ -148,18 +148,25 @@
                             </div>
                         </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Pilih Pelanggan</label>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <small><input type="checkbox" id="checkAllSelect"> <label for="checkAllSelect">Pilih Semua</label></small>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Pilih Pelanggan</label>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="checkAllSelect" class="custom-control-input">
+                                        <label class="custom-control-label" for="checkAllSelect">Pilih Semua</label>
+                                    </div>
+                                </div>
+                                <div class="select2-input select2-warning">
+                                    <select name="subscription_ids[]" id="subscription-select" class="form-control select2" multiple required>
+                                        @foreach ($subscriptions as $sub)
+                                            <option value="{{ $sub->id }}">
+                                                {{ $sub->pelanggan->nama_pelanggan }} - {{ $sub->paket->nama_paket }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                            <select name="subscription_ids[]" id="subscription-select" class="form-control select2" multiple required>
-                                @foreach ($subscriptions as $sub)
-                                    <option value="{{ $sub->id }}">
-                                        {{ $sub->pelanggan->nama_pelanggan }} - {{ $sub->paket->nama_paket }}
-                                    </option>
-                                @endforeach
-                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -173,22 +180,13 @@
 
 @endsection
 
-{{-- @push('script')
-    <!-- Script lainnya jika ada -->
-
-    <script>
-        $('#checkAllPelanggan').on('change', function () {
-            $('.pelanggan-checkbox').prop('checked', this.checked);
-        });
-    </script>
-@endpush --}}
-
 @push('script')
     <script>
         $(document).ready(function() {
             $('#subscription-select').select2({
                 placeholder: "Pilih pelanggan...",
-                width: '100%'
+                width: '100%',
+                theme: "bootstrap"
             });
 
             $('#checkAllSelect').on('change', function () {
